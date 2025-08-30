@@ -40,6 +40,9 @@ export const createBoard = createAsyncThunk(
     try {
       const response = await fetch(`/api/boards`, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ title }),
       });
       if (!response.ok) {

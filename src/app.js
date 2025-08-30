@@ -13,4 +13,13 @@ app.use("/api", boardsRouter);
 app.use("/api", listsRouter);
 app.use("/api", tasksRouter);
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ 
+    error: 'Internal Server Error',
+    message: err.message 
+  });
+});
+
 export default app;

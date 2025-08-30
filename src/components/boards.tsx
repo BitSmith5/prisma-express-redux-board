@@ -15,6 +15,7 @@ const Boards: React.FC = () => {
   }, [dispatch]);
 
   function handleCreateBoard() {
+    console.log(`title: ${title}`);
     dispatch(createBoard(title));
     setTitle("");
   }
@@ -38,7 +39,7 @@ const Boards: React.FC = () => {
       {/* Boards Grid */}
       <div className="grid">
         {boards.boards.map(board => (
-          <div className="card">
+          <div className="card" key={board.id}>
             <div className="card-header">
               <h3 className="card-title">{board.title}</h3>
               <div className="card-actions">
@@ -46,7 +47,7 @@ const Boards: React.FC = () => {
               </div>
             </div>
             <div className="card-content">
-              <span className="badge">{board.tasks.length} tasks</span>
+              <span className="badge">{board.tasks?.length || 0} tasks</span>
             </div>
           </div>
         ))}
