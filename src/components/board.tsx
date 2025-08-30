@@ -1,5 +1,6 @@
 import React from 'react';
 import List from './list';
+import type { TaskStatus } from '../store/types';
 
 const Board: React.FC = () => {
   return (
@@ -22,7 +23,7 @@ const Board: React.FC = () => {
       {/* Lists Container - Each list contains tasks */}
       <div className="columns">
         {/* List 1: To Do */}
-        <List />
+        <List heading="To Do" boardId={1} status="TODO"/>
 
         {/* List 2: In Progress */}
         <div className="column">

@@ -1,12 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import boardReducer from "./slices/boardSlice";
-import listReducer from "./slices/listSlice";
 import taskReducer from "./slices/taskSlice";
+import boardsReducer from './slices/boardsSlice';
 
 export const store = configureStore({
   reducer: {
+    boards: boardsReducer,
     board: boardReducer,
-    list: listReducer,
     task: taskReducer,
   },
 });

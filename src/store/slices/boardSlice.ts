@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { Board, List } from "../types";
+import type { Board, Task } from "../types";
+import { createTask } from './taskSlice'
 
 export interface BoardState {
   board: Board;
@@ -12,7 +13,7 @@ const initialState: BoardState = {
   board: {
     id: 0,
     title: "",
-    lists: [],
+    tasks: [],
   },
   status: "idle",
   error: null,
@@ -78,68 +79,6 @@ export const updateBoardTitle = createAsyncThunk(
   }
 );
 
-export const updateBoardLists = createAsyncThunk(
-  "board/updateBoardLists",
-  async ({ boardId, lists }: { boardId: number, lists: List[] }, { rejectWithValue }) => {
-    try {
-      const response = await fetch(`/api/boards/${boardId}/lists`, {
-        method: "PATCH",
-        body: JSON.stringify({ lists }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update board lists");
-      }
-      return response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("An unknown error occurred");
-    }
-  }
-);
-
-export const createBoard = createAsyncThunk(
-  "board/createBoard",
-  async (title: string, { rejectWithValue }) => {
-    try {
-      const response = await fetch(`/api/boards`, {
-        method: "POST",
-        body: JSON.stringify({ title }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to create board");
-      }
-      return response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("An unknown error occurred");
-    }
-  }
-);
-
-export const deleteBoard = createAsyncThunk(
-  "board/deleteBoard",
-  async (boardId: number, { rejectWithValue }) => {
-    try {
-      const response = await fetch(`/api/boards/${boardId}`, {
-        method: "DELETE",
-    });
-      if (!response.ok) {
-        throw new Error("Failed to delete board");
-      }
-      return await response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("An unknown error occurred");
-    }
-  }
-);
-
 const boardSlice = createSlice({
   name: "board",
   initialState,
@@ -150,61 +89,73 @@ const boardSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    .addCase(fetchBoard.pending, (state) => {
-      state.status = "loading";
-    })
-    .addCase(fetchBoard.fulfilled, (state, action: PayloadAction<Board>) => {
-      state.status = "succeeded";
-      state.board = action.payload;
-    })
-    .addCase(fetchBoard.rejected, (state, action) => {
-      state.status = "failed";
-      state.error = action.error.message ?? "Something went wrong with the board";
-    })
-    .addCase(updateBoard.pending, (state) => {
-      state.status = "loading";
-    })
-    .addCase(updateBoard.fulfilled, (state, action: PayloadAction<Board>) => {
-      state.status = "succeeded";
-      state.board = action.payload;
-    })
-    .addCase(updateBoard.rejected, (state, action) => {
-      state.status = "failed";
-      state.error = action.error.message ?? "Something went wrong with the board";
-    })
-    .addCase(updateBoardTitle.pending, (state) => {
-      state.status = "loading";
-    })
-    .addCase(updateBoardTitle.fulfilled, (state, action: PayloadAction<Board>) => {
-      state.status = "succeeded";
-      state.board = action.payload;
-    })
-    .addCase(updateBoardTitle.rejected, (state, action) => {
-      state.status = "failed";
-      state.error = action.error.message ?? "Something went wrong with the board";
-    })
-    .addCase(updateBoardLists.pending, (state) => {
-      state.status = "loading";
-    })
-    .addCase(updateBoardLists.fulfilled, (state, action: PayloadAction<Board>) => {
-      state.status = "succeeded";
-      state.board = action.payload;
-    })
-    .addCase(updateBoardLists.rejected, (state, action) => {
-      state.status = "failed";
-      state.error = action.error.message ?? "Something went wrong with the board";
-    })
-    .addCase(deleteBoard.pending, (state) => {
-      state.status = "loading";
-    })
-    .addCase(deleteBoard.fulfilled, (state, action: PayloadAction<Board>) => {
-      state.status = "succeeded";
-      state.board = action.payload;
-    })
-    .addCase(deleteBoard.rejected, (state, action) => {
-      state.status = "failed";
-      state.error = action.error.message ?? "Something went wrong with the board";
-    })
+      .addCase(fetchBoard.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchBoard.fulfilled, (state, action: PayloadAction<Board>) => {
+        state.status = "succeeded";
+        state.board = action.payload;
+      })
+      .addCase(fetchBoard.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message ?? "Something went wrong with the board";
+      })
+      .addCase(updateBoard.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateBoard.fulfilled, (state, action: PayloadAction<Board>) => {
+        state.status = "succeeded";
+        state.board = action.payload;
+      })
+      .addCase(updateBoard.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message ?? "Something went wrong with the board";
+      })
+      .addCase(updateBoardTitle.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateBoardTitle.fulfilled, (state, action: PayloadAction<Board>) => {
+        state.status = "succeeded";
+        state.board = action.payload;
+      })
+      .addCase(updateBoardTitle.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message ?? "Something went wrong with the board";
+      })
+      .addCase(createTask.pending, (state, action) => {
+        const tempTask = { 
+          id: Date.now(), 
+          title: action.meta.arg.title, 
+          status: action.meta.arg.status, 
+          description: action.meta.arg.description, 
+          boardId: action.meta.arg.boardId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          isTemp: true
+        };
+        state.board.tasks.push(tempTask);
+        state.status = 'loading';
+      })
+      .addCase(createTask.fulfilled, (state, action: PayloadAction<Task>) => {
+        state.status = 'succeeded';
+        // Replace temp task with real one
+        const tempIndex = state.board.tasks.findIndex(t => 
+          t.title === action.payload.title && 
+          t.boardId === action.payload.boardId &&
+          t.status === action.payload.status &&
+          t.isTemp
+        );
+        
+        if (tempIndex !== -1) {
+          state.board.tasks[tempIndex] = action.payload;
+        }
+      })
+      .addCase(createTask.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message ?? "Failed to create a task"
+        // Remove temp task on failure
+        state.board.tasks = state.board.tasks.filter(t => !t.isTemp);
+      })
   },
 });
 

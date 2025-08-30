@@ -1,7 +1,7 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTask, updateTaskStatus, updateTaskTitle, updateTaskDescription, deleteTask } from '../store/slices/taskSlice';
+import { updateTaskStatus, updateTaskTitle, updateTaskDescription, deleteTask } from '../store/slices/taskSlice';
 import type { RootState, AppDispatch } from '../store/store';
 
 const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
@@ -9,16 +9,8 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
   const { task, status, error } = useSelector((state: RootState) => state.task);
   const [isEditing, setIsEditing] = useState(false);
 
-  useEffect(() => {
-    dispatch(fetchTask(taskId));
-  }, [dispatch, taskId]);
-
   if (status === 'loading') {
     return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
   }
 
   if (!task) {

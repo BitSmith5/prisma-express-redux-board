@@ -1,34 +1,29 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { Task } from "../types";
+import type { Task, TaskStatus } from "../types";
 
 export interface TaskState {
-  task: Task;
+  task: Task | null;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: TaskState = {
-  task: {
-    id: 0,
-    title: "",
-    description: "",
-    status: "",
-    boardId: 0,
-    listId: 0,
-  },
+  task: null,
   status: "idle",
   error: null,
 };
 
-export const createTask = createAsyncThunk('task/createTask', async ({ title, listId }: { title: string, listId: number }, { rejectWithValue }) => {
+export const createTask = createAsyncThunk('task/createTask', async ({ title, boardId, status, description }: { title: string, boardId: number, status: TaskStatus, description: string }, { rejectWithValue }) => {
   try {
     const response = await fetch(`/api/tasks`, {
       method: "POST",
-      body: JSON.stringify({ title, listId }),
+      body: JSON.stringify({ title, boardId, status, description }),
+      headers: { 'Content-Type': 'application/json' },
     });
     if (!response.ok) {
       throw new Error("Failed to create task");
     }
+    console.log("Create Task successful");
     return response.json();
   } catch (error) {
     if (error instanceof Error) {
@@ -140,23 +135,6 @@ export const updateTaskBoardId = createAsyncThunk('task/updateTaskBoardId', asyn
     return rejectWithValue("An unknown error occurred");
   }
 });
-export const updateTaskListId = createAsyncThunk('task/updateTaskListId', async ({ taskId, listId }: { taskId: number, listId: number }, { rejectWithValue }) => {
-  try {
-    const response = await fetch(`/api/tasks/${taskId}/list`, {
-      method: "PATCH",
-      body: JSON.stringify({ listId }),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to update task list id");
-    }
-    return response.json();
-  } catch (error) {
-    if (error instanceof Error) {
-      return rejectWithValue(error.message);
-    }
-    return rejectWithValue("An unknown error occurred");
-  }
-});
 export const deleteTask = createAsyncThunk('task/deleteTask', async (taskId: number, { rejectWithValue }) => {
   try {
     const response = await fetch(`/api/tasks/${taskId}`, {
@@ -178,9 +156,6 @@ const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
-    setTask: (state, action: PayloadAction<Task>) => {
-      state.task = action.payload;
-    },
   },
   extraReducers: (builder) => {
     builder
@@ -250,17 +225,6 @@ const taskSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message ?? "Something went wrong with the task";
       })
-      .addCase(updateTaskListId.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(updateTaskListId.fulfilled, (state, action: PayloadAction<Task>) => {
-        state.status = "succeeded";
-        state.task = action.payload;
-      })
-      .addCase(updateTaskListId.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message ?? "Something went wrong with the task";
-      })
       .addCase(deleteTask.pending, (state) => {
         state.status = "loading";
       })
@@ -275,5 +239,4 @@ const taskSlice = createSlice({
   }
 });
 
-export const { setTask } = taskSlice.actions;
 export default taskSlice.reducer;

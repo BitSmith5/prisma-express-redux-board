@@ -1,5 +1,5 @@
 import express from "express";
-import { prisma } from '../prisma'
+import prisma from '../prisma.js'
 
 const router = express.Router();
 
@@ -33,15 +33,18 @@ router.get("/tasks/:id", async (req, res, next) => {
 
 router.post("/tasks", async (req, res, next) => {
   try {
-    const { title, listId } = req.body;
+    const { title, boardId, status, description } = req.body;
     if (!title || !title.trim()) {
       return res.status(400).json({ error: "Title is required" });
     }
-    if (!listId) {
-      return res.status(400).json({ error: "List ID is required" });
+    if (!boardId) {
+      return res.status(400).json({ error: "Board ID is required" });
+    }
+    if(!status) {
+      return res.status(400).json({ error: "Status is required" });
     }
     const task = await prisma.task.create({
-      data: { title: title.trim(), listId },
+      data: { title, boardId, status, description },
     });
     res.status(201).json(task);
   } catch (error) {
@@ -138,3 +141,5 @@ router.get("/tasks/:id/list", async (req, res, next) => {
     next(error);
   }
 });
+
+export default router;

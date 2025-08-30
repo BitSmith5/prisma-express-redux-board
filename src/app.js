@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
-import boardsRouter from "./routes/boards";
-import listsRouter from "./routes/list";
-import tasksRouter from "./routes/task";
+import boardsRouter from "./routes/boards.js";
+import listsRouter from "./routes/list.js";
+import tasksRouter from "./routes/task.js";
 
 const app = express();
 

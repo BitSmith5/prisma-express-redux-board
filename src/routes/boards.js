@@ -1,5 +1,5 @@
 import express from "express";
-import { prisma } from '../prisma'
+import prisma from '../prisma.js'
 
 const router = express.Router();
 
@@ -140,3 +140,5 @@ router.delete("/boards/:id", async (req, res, next) => {
     next(error);
   }
 });
+
+export default router;

@@ -3,18 +3,19 @@ export type Board = {
   title: string;
   createdAt?: string;
   updatedAt?: string;
-  lists: List[];
+  tasks: Task[];
+  isTemp?: boolean;
 };
 
 export type Task = {
   id: number;
   title: string;
   description: string;
-  status: string;
+  status: TaskStatus;
   boardId: number;
-  listId: number;
   createdAt?: string;
   updatedAt?: string;
+  isTemp?: boolean;
 };
 
 export type List = {
@@ -22,6 +23,6 @@ export type List = {
   title: string;
   tasks: Task[];
   boardId: number;
-  createdAt?: string;
-  updatedAt?: string;
 };
+
+export type TaskStatus = "TODO" | "IN_PROGRESS" | "DONE";

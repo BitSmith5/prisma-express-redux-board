@@ -1,8 +1,12 @@
-import { Kanban } from './components/kanban';
+import Kanban from './components/kanban';
+import ReduxStatusNotifications from './components/ReduxStatusNotifications';
 
 function App() {
   return (
-    <Kanban />
+    <>
+      <ReduxStatusNotifications />
+      <Kanban />
+    </>
   )
 }
 

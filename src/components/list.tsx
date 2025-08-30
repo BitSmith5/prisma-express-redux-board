@@ -1,23 +1,42 @@
 import React from 'react';
+import Task from './task';
+import { useState } from 'react';
+import type { TaskStatus } from '../store/types'
+import { useSelector, useDispatch } from 'react-redux';
+import type { AppDispatch, RootState } from '../store/store';
+import { createTask } from '../store/slices/taskSlice';
 
 interface ListProps {
-  title: string;
+  heading: string;
+  boardId: number;
+  status: TaskStatus;
 }
 
-const List: React.FC<ListProps> = ({ title }) => {
+const List: React.FC<ListProps> = ({ heading, boardId, status }) => {
+  const board = useSelector((state: RootState) => state.board);
+  const dispatch = useDispatch<AppDispatch>();
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+
+  const filteredTasks = board.board.tasks.filter((task) => task.status === status);
+
+  function handleAddTask() {
+    dispatch(createTask({ title, boardId, status, description }));
+    setTitle("");
+    setDescription("");
+  }
+
   return (
     <div className="column">
       <div className="column-header">
-        <h3 className="column-title">{title}</h3>
-        <div className="column-actions">
-          <button className="btn btn-icon">✏️</button>
-          <button className="btn btn-icon btn-danger">🗑️</button>
-        </div>
+        <h3 className="column-title">{heading}</h3>
       </div>
 
       {/* Tasks in List */}
       <div className="items">
-        {/* Task components will be rendered here */}
+        {filteredTasks.map((task) => (
+          <Task key={task.id} taskId={task.id} />
+        ))}
       </div>
 
       {/* Create New Task in List */}
@@ -26,12 +45,16 @@ const List: React.FC<ListProps> = ({ title }) => {
           type="text"
           placeholder="Enter task title..."
           className="input"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
         <textarea
           placeholder="Enter task description..."
           className="textarea"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
-        <button className="btn btn-primary">Add Task</button>
+        <button className="btn btn-primary" onClick={handleAddTask}>Add Task</button>
       </div>
     </div>
   );
