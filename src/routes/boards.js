@@ -9,6 +9,9 @@ router.get("/boards", async (req, res, next) => {
       orderBy: {
         id: "asc",
       },
+      include: {
+        tasks: true
+      }
     });
     res.json(boards);
   } catch (error) {
@@ -21,6 +24,7 @@ router.get("/boards/:id", async (req, res, next) => {
     const id = Number(req.params.id);
     const board = await prisma.board.findUnique({
       where: { id },
+      include: { tasks: true }
     });
     if (!board) {
       return res.status(404).json({ error: "Board not found" });
@@ -59,6 +63,7 @@ router.post("/boards", async (req, res, next) => {
     }
     const board = await prisma.board.create({
       data: { title },
+      include: { tasks: true }
     });
     res.status(201).json(board);
   } catch (error) {

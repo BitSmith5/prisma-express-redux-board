@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Board } from "../types";
+import { fetchBoard } from './boardSlice';
 
 export interface BoardsState {
   boards: Board[];
@@ -36,7 +37,7 @@ export const fetchBoards = createAsyncThunk(
 
 export const createBoard = createAsyncThunk(
   "boards/createBoard",
-  async (title: string, { rejectWithValue }) => {
+  async (title: string, { rejectWithValue, dispatch }) => {
     try {
       const response = await fetch(`/api/boards`, {
         method: "POST",
@@ -48,7 +49,9 @@ export const createBoard = createAsyncThunk(
       if (!response.ok) {
         throw new Error("Failed to create board");
       }
-      return response.json();
+      const newBoard = await response.json();
+      dispatch(fetchBoard(newBoard.id));
+      return newBoard;
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -84,6 +87,10 @@ const boardsSlice = createSlice({
   reducers: {
     setBoards: (state, action: PayloadAction<Board[]>) => {
       state.boards = action.payload;
+    },
+    resetStatus: (state) => {
+      state.status = "idle";
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -147,5 +154,5 @@ const boardsSlice = createSlice({
   }
 });
 
-export const { setBoards } = boardsSlice.actions;
+export const { setBoards, resetStatus } = boardsSlice.actions;
 export default boardsSlice.reducer;

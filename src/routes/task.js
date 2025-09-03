@@ -52,6 +52,7 @@ router.post("/tasks", async (req, res, next) => {
   }
 });
 
+// More specific routes must come before the general /tasks/:id route
 router.patch("/tasks/:id/title", async (req, res, next) => {
   try {
     const id = Number(req.params.id);
@@ -96,12 +97,57 @@ router.patch("/tasks/:id/description", async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const { description } = req.body;
-    if (!description) {
+    if (description === undefined || description === null) {
       return res.status(400).json({ error: "Description is required" });
     }
     const task = await prisma.task.update({
       where: { id },
       data: { description: description },
+    });
+    res.json(task);
+  } catch (error) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Task not found" });
+    }
+    next(error);
+  }
+});
+
+router.patch("/tasks/:id/board", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const { boardId } = req.body;
+    if (!boardId) {
+      return res.status(400).json({ error: "Board ID is required" });
+    }
+    const task = await prisma.task.update({
+      where: { id },
+      data: { boardId: Number(boardId) },
+    });
+    res.json(task);
+  } catch (error) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Task not found" });
+    }
+    next(error);
+  }
+});
+
+// General route for updating entire task - must come after specific routes
+router.patch("/tasks/:id", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const { title, boardId, status, description } = req.body;
+    
+    const updateData = {};
+    if (title !== undefined) updateData.title = title.trim();
+    if (boardId !== undefined) updateData.boardId = Number(boardId);
+    if (status !== undefined) updateData.status = status;
+    if (description !== undefined) updateData.description = description;
+    
+    const task = await prisma.task.update({
+      where: { id },
+      data: updateData,
     });
     res.json(task);
   } catch (error) {

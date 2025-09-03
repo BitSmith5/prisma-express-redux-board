@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Board, Task } from "../types";
-import { createTask } from './taskSlice'
+import { createTask, deleteTask } from './taskSlice'
 
 export interface BoardState {
   board: Board;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
+  rollbackTasks: Task[]; // Array to store previous task states for rollback
 }
 
 const initialState: BoardState = {
@@ -17,6 +18,7 @@ const initialState: BoardState = {
   },
   status: "idle",
   error: null,
+  rollbackTasks: [],
 };
 
 export const fetchBoard = createAsyncThunk(
@@ -85,6 +87,41 @@ const boardSlice = createSlice({
   reducers: {
     setBoard: (state, action: PayloadAction<Board>) => {
       state.board = action.payload;
+      state.status = "succeeded";
+    },
+    resetStatus: (state) => {
+      state.status = "idle";
+      state.error = null;
+    },
+    // Set rollback tasks for a specific task
+    setRollbackTask: (state, action: PayloadAction<Task>) => {
+      const existingIndex = state.rollbackTasks.findIndex(t => t.id === action.payload.id);
+      if (existingIndex !== -1) {
+        state.rollbackTasks[existingIndex] = action.payload;
+      } else {
+        state.rollbackTasks.push(action.payload);
+      }
+    },
+    // Optimistic update for entire task
+    updateTaskOptimistic: (state, action: PayloadAction<Task>) => {
+      const taskIndex = state.board.tasks.findIndex(t => t.id === action.payload.id);
+      if (taskIndex !== -1) {
+        state.board.tasks[taskIndex] = action.payload;
+      }
+    },
+    // Rollback action for failed task update
+    rollbackTask: (state, action: PayloadAction<number>) => {
+      const rollbackTask = state.rollbackTasks.find(t => t.id === action.payload);
+      if (rollbackTask) {
+        const taskIndex = state.board.tasks.findIndex(t => t.id === action.payload);
+        if (taskIndex !== -1) {
+          state.board.tasks[taskIndex] = rollbackTask;
+        }
+      }
+    },
+    // Clear rollback task after successful save
+    clearRollbackTask: (state, action: PayloadAction<number>) => {
+      state.rollbackTasks = state.rollbackTasks.filter(t => t.id !== action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -156,8 +193,12 @@ const boardSlice = createSlice({
         // Remove temp task on failure
         state.board.tasks = state.board.tasks.filter(t => !t.isTemp);
       })
+      .addCase(deleteTask.fulfilled, (state, action: PayloadAction<{ id: number; deleted: boolean }>) => {
+        // Remove the deleted task from the board's tasks array
+        state.board.tasks = state.board.tasks.filter(task => task.id !== action.payload.id);
+      })
   },
 });
 
-export const { setBoard } = boardSlice.actions;
+export const { setBoard, resetStatus, updateTaskOptimistic, rollbackTask, setRollbackTask, clearRollbackTask } = boardSlice.actions;
 export default boardSlice.reducer;

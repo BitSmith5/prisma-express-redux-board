@@ -46,9 +46,7 @@ const ReduxStatusNotifications: React.FC = () => {
 
   // Memoize the allSlices array to prevent unnecessary re-creation
   const allSlices = useMemo(() => [boardsStatus, boardStatus, taskStatus], [
-    boardsStatus.status, boardsStatus.error,
-    boardStatus.status, boardStatus.error,
-    taskStatus.status, taskStatus.error
+    boardsStatus, boardStatus, taskStatus
   ]);
 
   // Memoize the notification update logic

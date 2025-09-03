@@ -13,12 +13,27 @@ interface ListProps {
 }
 
 const List: React.FC<ListProps> = ({ heading, boardId, status }) => {
-  const board = useSelector((state: RootState) => state.board);
+  const board = useSelector((state: RootState) => state.board.board);
+  const boardStatus = useSelector((state: RootState) => state.board.status);
   const dispatch = useDispatch<AppDispatch>();
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
-  const filteredTasks = board.board.tasks.filter((task) => task.status === status);
+  // Don't render until board data is loaded
+  if (boardStatus === "loading" || !board.tasks) {
+    return (
+      <div className="column">
+        <div className="column-header">
+          <h3 className="column-title">{heading}</h3>
+        </div>
+        <div className="items">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const filteredTasks = board.tasks.length > 0 ? board.tasks.filter((task) => task.status === status) : [];
 
   function handleAddTask() {
     dispatch(createTask({ title, boardId, status, description }));
@@ -33,7 +48,7 @@ const List: React.FC<ListProps> = ({ heading, boardId, status }) => {
       </div>
 
       {/* Tasks in List */}
-      <div className="items">
+      <div className="items" style={{ marginBottom: '10px' }}>
         {filteredTasks.map((task) => (
           <Task key={task.id} taskId={task.id} />
         ))}
