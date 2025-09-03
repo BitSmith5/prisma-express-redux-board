@@ -72,26 +72,23 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
 
       {/* Status Dropdown */}
       <div className="select">
-        <label htmlFor="task-status" className="select-label">
-          Status:
-        </label>
         <select
           id="task-status"
           className="status-dropdown"
           value={task.status || ""}
-          style={{ marginBottom: "10px" }}
+          style={{ marginBottom: "10px", width: "fit-content" }}
           onChange={handleStatusChange}
         >
-          <option value="">Select Status</option>
           <option value="TODO">To Do</option>
           <option value="IN_PROGRESS">In Progress</option>
           <option value="DONE">Done</option>
         </select>
       </div>
 
-      <span className="status status-pending">{task.status}</span>
-
       <div className="item-actions">
+        <button className="btn btn-icon btn-danger" onClick={() => dispatch(deleteTask(taskId))}>
+          🗑️
+        </button>
         {hasChanges && (
           <button
             className="btn btn-primary"
@@ -101,9 +98,6 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
             💾 Save
           </button>
         )}
-        <button className="btn btn-icon btn-danger" onClick={() => dispatch(deleteTask(taskId))}>
-          🗑️
-        </button>
       </div>
     </div>
   );

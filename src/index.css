@@ -1,15 +1,15 @@
 /* CSS Variables for consistent theming */
 :root {
   /* Colors */
-  --bg-primary: #0f0f23;
-  --bg-secondary: #1a1a2e;
-  --bg-tertiary: #16213e;
-  --bg-card: #1e293b;
+  --bg-primary: #01080E;
+  --bg-secondary: #04111d;
+  --bg-tertiary: #03101C;
+  --bg-card: #071C37;
   --bg-input: #334155;
   
   /* Text Colors */
   --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
+  --text-secondary: #6AA7F8;
   --text-muted: #94a3b8;
   
   /* Accent Colors */
@@ -237,6 +237,8 @@ body {
   display: flex;
   gap: var(--spacing-xs);
   margin-top: var(--spacing-sm);
+  justify-content: space-between;
+  flex-direction: row-reverse;
 }
 
 /* Forms */
