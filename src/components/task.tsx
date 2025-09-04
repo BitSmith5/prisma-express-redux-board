@@ -4,7 +4,6 @@ import { updateTask, deleteTask } from '../store/slices/taskSlice';
 import { updateTaskOptimistic, setRollbackTask } from '../store/slices/boardSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import type { Task as TaskType } from '../store/types';
-import CustomDropdown from './CustomDropdown';
 
 const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -12,11 +11,40 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
   const task = board.tasks.find(task => task.id === taskId) as TaskType;
 
   const [hasChanges, setHasChanges] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   // Set rollback task on component mount
   useEffect(() => {
     dispatch(setRollbackTask(task));
   }, [dispatch, task]); // Run when task changes
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Auto-resize textarea when description changes
+  useEffect(() => {
+    if (textareaRef.current) {
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.style.height = 'auto';
+          textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+        }
+      }, 0);
+    }
+  }, [task.description]);
 
   // Handle changes with optimistic updates
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +59,14 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
     setHasChanges(true);
     // Optimistic update for immediate UI feedback
     dispatch(updateTaskOptimistic(newTask));
+
+    // Auto-resize textarea to fit content
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
   };
+
+
 
   const handleStatusChange = (value: string) => {
     const newTask = { ...task, status: value as "TODO" | "IN_PROGRESS" | "DONE" };
@@ -43,6 +78,12 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
     dispatch(setRollbackTask(newTask)); // Set new state as rollback
     dispatch(updateTask(newTask)); // Save to server
     setHasChanges(false);
+    setIsDropdownOpen(false);
+  };
+
+  const handleDelete = () => {
+    dispatch(deleteTask(taskId));
+    setIsDropdownOpen(false);
   };
 
   // Save changes to server
@@ -53,9 +94,15 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
     setHasChanges(false);
   };
 
+  const statusOptions = [
+    { value: "TODO", label: "To Do" },
+    { value: "IN_PROGRESS", label: "In Progress" },
+    { value: "DONE", label: "Done" }
+  ];
+
   return (
     <div className="item">
-      <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "10px" }}>
+      <div style={{ display: "flex", gap: "10px", alignItems: "start", marginBottom: "10px" }}>
         <input
           className="input-title"
           type="text"
@@ -63,35 +110,55 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
           value={task.title}
           onChange={handleTitleChange}
         />
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <button className="btn btn-icon btn-danger" onClick={() => dispatch(deleteTask(taskId))}>
-            🗑️
+        <div className="task-actions-dropdown" ref={dropdownRef}>
+          <button
+            className="btn btn-icon btn-menu"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            style={{ fontSize: '18px', padding: '4px 8px' }}
+          >
+            ⋮
           </button>
+
+          {isDropdownOpen && (
+            <div className="task-actions-menu">
+              <div className="task-actions-section">
+                <div className="task-actions-label">Status</div>
+                {statusOptions.map((option) => (
+                  <div
+                    key={option.value}
+                    className={`task-actions-option ${option.value === task.status ? 'task-actions-option--selected' : ''}`}
+                    onClick={() => handleStatusChange(option.value)}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+              <div className="task-actions-divider"></div>
+              <div
+                className="task-actions-option task-actions-option--danger"
+                onClick={handleDelete}
+              >
+                🗑️ Delete Task
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <textarea
+        ref={textareaRef}
         className="input-description"
         placeholder="Enter a description..."
         value={task.description}
-        style={{ marginBottom: "10px" }}
+        style={{
+          marginBottom: "10px",
+          resize: "none",
+          overflow: "hidden",
+          minHeight: "20px"
+        }}
         onChange={handleDescriptionChange}
       />
 
-      {/* Status Dropdown */}
-
-
       <div className="item-actions">
-        <CustomDropdown
-          value={task.status || ""}
-          onChange={handleStatusChange}
-          options={[
-            { value: "TODO", label: "To Do" },
-            { value: "IN_PROGRESS", label: "In Progress" },
-            { value: "DONE", label: "Done" }
-          ]}
-          placeholder="Select status..."
-        />
-
         {hasChanges && (
           <button
             className="btn btn-save"

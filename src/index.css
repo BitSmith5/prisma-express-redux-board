@@ -2,13 +2,13 @@
 :root {
   /* Colors */
   --bg-primary: #01080E;
-  --bg-secondary: #03101C;
+  --bg-secondary: #07213a;
   --bg-tertiary: #071C37;
-  --bg-card: #031525;
+  --bg-card: #11294349;
   --bg-input: #334155;
   
   /* Text Colors */
-  --text-primary: #f8fafc;
+  --text-primary: #b8d5f3;
   --text-secondary: #6AA7F8;
   --text-tertiary: #22508d;
   --text-muted: #94a3b8;
@@ -19,6 +19,14 @@
   --accent-success: #10b981;
   --accent-warning: #f59e0b;
   --accent-danger: #ef4444;
+
+  /* Save Button Colors */
+  --save: #022c1f;
+  --save-border: #023d2b;
+  --save-text: rgb(13, 216, 152);
+  --save-hover: #059669;
+  --save-hover-text: rgb(13, 216, 152);
+  --save-hover-border: #0aca8d;
   
   /* Status Colors */
   --status-pending: #f59e0b;
@@ -235,7 +243,7 @@ body {
 .item-actions {
   display: flex;
   gap: var(--spacing-xs);
-  margin-top: var(--spacing-sm);
+  margin-top: var(--spacing-md);
   justify-content: space-between;
   flex-direction: row-reverse;
 }
@@ -319,7 +327,6 @@ body {
   transition: border-color 0.2s ease;
   cursor: text;
   resize: vertical;
-  min-height: 100px;
   font-family: inherit;
 }
 
@@ -414,17 +421,16 @@ body {
 }
 
 .btn-save {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  background-color: var(--save);
+  color: var(--save-text);
+  border: 1px solid var(--save-border);
   border-radius: var(--border-radius);
   transition: all 0.2s ease;
 }
 
 .btn-save:hover {
-  border-color: var(--accent-primary);
-  box-shadow: var(--shadow-md);
-  color: var(--text-primary);
+  border-color: var(--save-hover-border);
+  color: var(--save-hover-text);
 }
 
 /* Badges */
@@ -1057,6 +1063,92 @@ html {
   background-color: rgba(16, 185, 129, 0.2);
 }
 
+/* Task Actions Dropdown */
+.task-actions-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.btn-menu {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.btn-menu:hover {
+  background-color: transparent;
+  color: var(--text-primary);
+}
+
+.task-actions-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  margin-top: 4px;
+  min-width: 180px;
+  overflow: hidden;
+}
+
+.task-actions-section {
+  padding: var(--spacing-sm) 0;
+}
+
+.task-actions-label {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--spacing-xs);
+}
+
+.task-actions-option {
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.task-actions-option:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.task-actions-option--selected {
+  background-color: var(--accent-primary);
+  color: white;
+}
+
+.task-actions-option--selected:hover {
+  background-color: #2563eb;
+}
+
+.task-actions-option--danger {
+  color: var(--accent-danger);
+}
+
+.task-actions-option--danger:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.task-actions-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: var(--spacing-xs) 0;
+}
+
 /* Responsive adjustments for notification banner */
 @media (max-width: 768px) {
   .notification-banner {
@@ -1065,5 +1157,11 @@ html {
     left: var(--spacing-md);
     max-width: none;
     min-width: auto;
+  }
+  
+  .task-actions-menu {
+    right: auto;
+    left: 0;
+    min-width: 160px;
   }
 }
