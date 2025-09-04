@@ -250,7 +250,7 @@ body {
 
 /* Forms */
 .form-group {
-  margin-bottom: var(--spacing-lg);
+  margin-top: var(--spacing-md);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -362,7 +362,7 @@ body {
   width: fit-content;
   border: none;
   border-radius: var(--border-radius);
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -376,12 +376,13 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--accent-primary);
-  color: white;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
 }
 
 .btn-primary:hover {
-  background-color: #2563eb;
+  background-color: var(--bg-tertiary);
 }
 
 .btn-secondary {
