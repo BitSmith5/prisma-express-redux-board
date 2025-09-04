@@ -2,14 +2,15 @@
 :root {
   /* Colors */
   --bg-primary: #01080E;
-  --bg-secondary: #04111d;
-  --bg-tertiary: #03101C;
-  --bg-card: #071C37;
+  --bg-secondary: #03101C;
+  --bg-tertiary: #071C37;
+  --bg-card: #031525;
   --bg-input: #334155;
   
   /* Text Colors */
   --text-primary: #f8fafc;
   --text-secondary: #6AA7F8;
+  --text-tertiary: #22508d;
   --text-muted: #94a3b8;
   
   /* Accent Colors */
@@ -25,7 +26,7 @@
   --status-completed: #10b981;
   
   /* Borders & Shadows */
-  --border-color: #334155;
+  --border-color: #112943;
   --border-radius: 8px;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -97,7 +98,7 @@ body {
 .column-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-tertiary);
 }
 
 .item-title {
@@ -185,10 +186,10 @@ body {
 
 /* Columns */
 .column {
-  background-color: var(--bg-tertiary);
+  /* background-color: var(--bg-tertiary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-lg); */
   min-height: 400px;
 }
 
@@ -197,8 +198,6 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-lg);
-  padding-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--border-color);
 }
 
 .column-actions {
@@ -365,12 +364,8 @@ body {
 }
 
 .btn:hover {
-  transform: translateY(-1px);
+  /* transform: translateY(-1px); */
   box-shadow: var(--shadow-md);
-}
-
-.btn:active {
-  transform: translateY(0);
 }
 
 .btn-primary {
@@ -416,6 +411,20 @@ body {
 .btn-danger:hover {
   background-color: var(--accent-danger);
   color: white;
+}
+
+.btn-save {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.btn-save:hover {
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
 }
 
 /* Badges */
@@ -488,12 +497,77 @@ body {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
-/* Status-specific colors */
-.status-dropdown option[value="todo"] { color: #6b7280; }
-.status-dropdown option[value="in-progress"] { color: #f59e0b; }
-.status-dropdown option[value="review"] { color: #8b5cf6; }
-.status-dropdown option[value="done"] { color: #10b981; }
-.status-dropdown option[value="blocked"] { color: #ef4444; }
+/* Status-specific colors for dropdown options */
+.status-dropdown option[value="TODO"] { color: #6b7280; }
+.status-dropdown option[value="IN_PROGRESS"] { color: #f59e0b; }
+.status-dropdown option[value="DONE"] { color: #10b981; }
+
+/* Status-specific background colors for dropdown based on selected value */
+.select select[data-status="TODO"] {
+  background-color: rgba(107, 114, 128, 0.15);
+  border-color: #6b7280;
+  color: #6b7280;
+}
+
+.select select[data-status="IN_PROGRESS"] {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.select select[data-status="DONE"] {
+  background-color: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+/* Hover states for status-specific dropdowns */
+.select select[data-status="TODO"]:hover {
+  background-color: rgba(107, 114, 128, 0.25);
+  border-color: #9ca3af;
+}
+
+.select select[data-status="IN_PROGRESS"]:hover {
+  background-color: rgba(245, 158, 11, 0.25);
+  border-color: #fbbf24;
+}
+
+.select select[data-status="DONE"]:hover {
+  background-color: rgba(16, 185, 129, 0.25);
+  border-color: #34d399;
+}
+
+/* Focus states for status-specific dropdowns */
+.select select[data-status="TODO"]:focus {
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
+}
+
+.select select[data-status="IN_PROGRESS"]:focus {
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+.select select[data-status="DONE"]:focus {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Status-specific background colors for dropdown based on selected value */
+.status-dropdown[data-status="TODO"] {
+  background-color: rgba(107, 114, 128, 0.2);
+  border-color: #6b7280;
+  color: #6b7280;
+}
+
+.status-dropdown[data-status="IN_PROGRESS"] {
+  background-color: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.status-dropdown[data-status="DONE"] {
+  background-color: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #10b981;
+}
 
 /* Select/Dropdown Styles */
 .select {
@@ -504,10 +578,13 @@ body {
 
 .select select {
   width: 100%;
-  padding: var(--spacing-md);
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
   background-color: var(--bg-input);
   border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border-radius: 30px;
   color: var(--text-primary);
   font-size: 0.875rem;
   cursor: pointer;
@@ -545,6 +622,7 @@ body {
   background-color: var(--bg-card);
   color: var(--text-primary);
   padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border-color);
 }
 
 .select select option:hover {
@@ -553,7 +631,7 @@ body {
 }
 
 .select select option:checked {
-  background-color: var(--accent-primary);
+  background-color: var(--text-tertiary);
   color: white;
 }
 
@@ -847,6 +925,136 @@ html {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+
+
+/* Custom Dropdown Styles */
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+}
+
+.custom-dropdown__control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 30px;
+  cursor: pointer;
+  min-width: 130px;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.custom-dropdown__control:hover {
+  border-color: var(--accent-primary);
+  background-color: var(--bg-card);
+}
+
+.custom-dropdown__control--open {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.custom-dropdown__value {
+  flex: 1;
+  text-align: left;
+}
+
+.custom-dropdown__arrow {
+  margin-left: var(--spacing-sm);
+  font-size: 0.75rem;
+  color: inherit;
+  transition: transform 0.2s ease;
+}
+
+.custom-dropdown__control--open .custom-dropdown__arrow {
+  transform: rotate(180deg);
+}
+
+.custom-dropdown__menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.custom-dropdown__option {
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.custom-dropdown__option:last-child {
+  border-bottom: none;
+}
+
+.custom-dropdown__option:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.custom-dropdown__option--selected {
+  background-color: inherit;
+  color: white;
+}
+
+/* Status-specific colors for custom dropdown */
+.custom-dropdown__control[data-status="TODO"] {
+  background-color: rgba(107, 114, 128, 0.15);
+  border-color: #6b7280;
+  color: #6b7280;
+}
+
+.custom-dropdown__control[data-status="IN_PROGRESS"] {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.custom-dropdown__control[data-status="DONE"] {
+  background-color: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+/* Status-specific option colors */
+.custom-dropdown__option[data-value="TODO"] {
+  color: #6b7280;
+}
+
+.custom-dropdown__option[data-value="IN_PROGRESS"] {
+  color: #f59e0b;
+}
+
+.custom-dropdown__option[data-value="DONE"] {
+  color: #10b981;
+}
+
+/* Hover states for status-specific options */
+.custom-dropdown__option[data-value="TODO"]:hover {
+  background-color: rgba(107, 114, 128, 0.2);
+}
+
+.custom-dropdown__option[data-value="IN_PROGRESS"]:hover {
+  background-color: rgba(245, 158, 11, 0.2);
+}
+
+.custom-dropdown__option[data-value="DONE"]:hover {
+  background-color: rgba(16, 185, 129, 0.2);
 }
 
 /* Responsive adjustments for notification banner */

@@ -20,7 +20,7 @@ const Board: React.FC = () => {
   }
 
   return (
-    <div className="view">
+    <>
       <div className="view-header">
         <h2 className="view-title">{board.title}</h2>
       </div>
@@ -31,7 +31,7 @@ const Board: React.FC = () => {
         <List heading="In-Progress" boardId={board.id} status="IN_PROGRESS" />
         <List heading="Done" boardId={board.id} status="DONE" />
       </div>
-    </div>
+    </>
   );
 };
 

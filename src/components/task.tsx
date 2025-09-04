@@ -4,6 +4,7 @@ import { updateTask, deleteTask } from '../store/slices/taskSlice';
 import { updateTaskOptimistic, setRollbackTask } from '../store/slices/boardSlice';
 import type { RootState, AppDispatch } from '../store/store';
 import type { Task as TaskType } from '../store/types';
+import CustomDropdown from './CustomDropdown';
 
 const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,8 +33,8 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
     dispatch(updateTaskOptimistic(newTask));
   };
 
-  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newTask = { ...task, status: e.target.value as "TODO" | "IN_PROGRESS" | "DONE" };
+  const handleStatusChange = (value: string) => {
+    const newTask = { ...task, status: value as "TODO" | "IN_PROGRESS" | "DONE" };
     setHasChanges(true);
     // Optimistic update for immediate UI feedback
     dispatch(updateTaskOptimistic(newTask));
@@ -54,14 +55,20 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
 
   return (
     <div className="item">
-      <input
-        className="input-title"
-        type="text"
-        placeholder="Enter a title..."
-        value={task.title}
-        style={{ marginBottom: "10px" }}
-        onChange={handleTitleChange}
-      />
+      <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "10px" }}>
+        <input
+          className="input-title"
+          type="text"
+          placeholder="Enter a title..."
+          value={task.title}
+          onChange={handleTitleChange}
+        />
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <button className="btn btn-icon btn-danger" onClick={() => dispatch(deleteTask(taskId))}>
+            🗑️
+          </button>
+        </div>
+      </div>
       <textarea
         className="input-description"
         placeholder="Enter a description..."
@@ -71,31 +78,26 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
       />
 
       {/* Status Dropdown */}
-      <div className="select">
-        <select
-          id="task-status"
-          className="status-dropdown"
-          value={task.status || ""}
-          style={{ marginBottom: "10px", width: "fit-content" }}
-          onChange={handleStatusChange}
-        >
-          <option value="TODO">To Do</option>
-          <option value="IN_PROGRESS">In Progress</option>
-          <option value="DONE">Done</option>
-        </select>
-      </div>
+
 
       <div className="item-actions">
-        <button className="btn btn-icon btn-danger" onClick={() => dispatch(deleteTask(taskId))}>
-          🗑️
-        </button>
+        <CustomDropdown
+          value={task.status || ""}
+          onChange={handleStatusChange}
+          options={[
+            { value: "TODO", label: "To Do" },
+            { value: "IN_PROGRESS", label: "In Progress" },
+            { value: "DONE", label: "Done" }
+          ]}
+          placeholder="Select status..."
+        />
+
         {hasChanges && (
           <button
-            className="btn btn-primary"
+            className="btn btn-save"
             onClick={handleSave}
-            style={{ marginRight: "10px" }}
           >
-            💾 Save
+            Save
           </button>
         )}
       </div>

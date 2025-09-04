@@ -16,13 +16,11 @@ export const Kanban: React.FC = () => {
       
       {/* Boards Overview - Shows all boards */}
       <div style={{ marginBottom: '3rem' }}>
-        <h2>Boards Overview:</h2>
         <Boards />
       </div>
       
       {/* Individual Board View - Shows selected board with its lists and tasks */}
       <div style={{ marginBottom: '3rem' }}>
-        <h2>Individual Board View:</h2>
         <Board />
       </div>
     </div>
