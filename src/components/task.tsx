@@ -126,7 +126,7 @@ const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
                 {statusOptions.map((option) => (
                   <div
                     key={option.value}
-                    className={`task-actions-option ${option.value === task.status ? 'task-actions-option--selected' : ''}`}
+                    className={`task-actions-option`}
                     onClick={() => handleStatusChange(option.value)}
                   >
                     {option.label}
