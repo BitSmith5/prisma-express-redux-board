@@ -10,12 +10,7 @@ const Board: React.FC = () => {
   // Don't render until board data is loaded
   if (boardStatus === "loading" || !board || board.id === 0) {
     return (
-      <div className="view">
-        <div className="view-header">
-          <h2 className="view-title">Loading Board...</h2>
-        </div>
-        <p>Please wait while the board loads...</p>
-      </div>
+      <></>
     );
   }
 

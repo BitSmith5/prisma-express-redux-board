@@ -19,7 +19,7 @@ const List: React.FC<ListProps> = ({ heading, boardId, status }) => {
   const [description, setDescription] = useState<string>("");
 
   // Don't render until board data is loaded
-  if (boardStatus === "loading" || !board.tasks) {
+  if (boardStatus === "loading" || !board || !board.tasks) {
     return (
       <div className="column">
         <div className="column-header">

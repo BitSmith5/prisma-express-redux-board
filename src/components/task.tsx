@@ -8,7 +8,7 @@ import type { Task as TaskType } from '../store/types';
 const Task: React.FC<{ taskId: number }> = ({ taskId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const board = useSelector((state: RootState) => state.board.board);
-  const task = board.tasks.find(task => task.id === taskId) as TaskType;
+  const task = board?.tasks.find(task => task.id === taskId) as TaskType;
 
   const [hasChanges, setHasChanges] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
