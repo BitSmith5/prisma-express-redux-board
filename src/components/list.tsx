@@ -23,7 +23,7 @@ const List: React.FC<ListProps> = ({ heading, boardId, status }) => {
     return (
       <div className="column">
         <div className="column-header">
-          <h3 className="column-title">{heading}</h3>
+          <h3 className={`column-title status-${status.toLowerCase()}`}>{heading}</h3>
         </div>
         <div className="items">
           <p>Loading...</p>
@@ -42,8 +42,8 @@ const List: React.FC<ListProps> = ({ heading, boardId, status }) => {
   return (
     <div className="column">
       <div className="column-header">
-        <h3 className="column-title">{heading}</h3>
-        <button className="btn btn-primary" onClick={handleAddTask}>Add Task</button>
+        <h3 className={`column-title status-${status.toLowerCase()}`}>{heading}</h3>
+        <button className="btn btn-primary" onClick={handleAddTask}>ADD TASK</button>
       </div>
 
       {/* Tasks in List */}

@@ -107,7 +107,20 @@ body {
 .column-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-tertiary);
+  color: var(--text-primary);
+}
+
+/* Status-specific column title colors */
+.column-title.status-todo {
+  color: var(--status-pending);
+}
+
+.column-title.status-in_progress {
+  color: var(--status-progress);
+}
+
+.column-title.status-done {
+  color: var(--status-completed);
 }
 
 .item-title {
