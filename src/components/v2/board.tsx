@@ -3,8 +3,8 @@ import List from './list';
 import { useGetBoardQuery } from '../../store/v2/api/boardApi';
 
 const Board: React.FC<{ boardId: number }> = ({ boardId }) => {
-  const { data: board, isLoading: boardLoading, error: boardError } = useGetBoardQuery(boardId);
-  
+  const { data: board, isLoading: boardLoading } = useGetBoardQuery(boardId);
+
   // Don't render until board data is loaded
   if (boardLoading || !board) {
     return (

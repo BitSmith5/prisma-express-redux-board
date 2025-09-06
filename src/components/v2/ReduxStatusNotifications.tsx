@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { 
   useGetBoardsQuery, 
-  useGetBoardQuery, 
   useCreateBoardMutation,
   useUpdateBoardMutation,
   useDeleteBoardMutation,
@@ -144,7 +143,7 @@ const ReduxStatusNotifications: React.FC = () => {
     };
   }, []);
 
-  const handleClose = useCallback((id: string) => {
+  const handleClose = useCallback(() => {
     setCurrentNotification(null);
   }, []);
 
@@ -157,7 +156,7 @@ const ReduxStatusNotifications: React.FC = () => {
       message={currentNotification.message}
       duration={currentNotification.type === 'loading' ? 0 : 5000}
       show={currentNotification.show}
-      onClose={() => handleClose(currentNotification.id)}
+      onClose={() => handleClose()}
     />
   );
 };

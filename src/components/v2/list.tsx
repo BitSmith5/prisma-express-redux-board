@@ -11,7 +11,7 @@ interface ListProps {
 }
 
 const List: React.FC<ListProps> = ({ heading, boardId, status }) => {
-  const { data: board, isLoading: boardLoading, error: boardError } = useGetBoardQuery(boardId);
+  const { data: board, isLoading: boardLoading } = useGetBoardQuery(boardId);
   const [createTask] = useCreateTaskMutation();
   const [description, setDescription] = useState<string>("");
 
