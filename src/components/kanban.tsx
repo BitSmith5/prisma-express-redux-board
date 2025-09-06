@@ -1,8 +1,10 @@
-import React from 'react';
-import Boards from './boards';
-import Board from './board';
+import React, { useState } from 'react';
+import Boards from './v2/boards';
+import Board from './v2/board';
 
 export const Kanban: React.FC = () => {
+  const [currentBoardId, setCurrentBoardId] = useState<number | null>(null);
+
   return (
     <div className="container">
       {/* Main Kanban Container */}
@@ -16,12 +18,12 @@ export const Kanban: React.FC = () => {
       
       {/* Boards Overview - Shows all boards */}
       <div style={{ marginBottom: '3rem' }}>
-        <Boards />
+        <Boards currentBoardId={currentBoardId} onBoardSelect={setCurrentBoardId}/>
       </div>
       
       {/* Individual Board View - Shows selected board with its lists and tasks */}
       <div style={{ marginBottom: '3rem' }}>
-        <Board />
+        {currentBoardId && <Board boardId={currentBoardId}/>}
       </div>
     </div>
   );

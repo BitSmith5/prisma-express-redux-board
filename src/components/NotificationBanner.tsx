@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export type NotificationType = 'loading' | 'success' | 'error' | 'warning' | 'info';
 
@@ -22,14 +22,6 @@ const NotificationBanner: React.FC<NotificationBannerProps> = ({
   const [isVisible, setIsVisible] = useState(show);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const handleClose = useCallback(() => {
-    setIsAnimating(false);
-    setTimeout(() => {
-      setIsVisible(false);
-      onClose?.();
-    }, 300); // Wait for animation to complete
-  }, [onClose]);
-
   useEffect(() => {
     setIsVisible(show);
     if (show) {
@@ -45,7 +37,15 @@ const NotificationBanner: React.FC<NotificationBannerProps> = ({
 
       return () => clearTimeout(timer);
     }
-  }, [duration, isVisible, type, handleClose]);
+  }, [duration, isVisible, type]);
+
+  const handleClose = () => {
+    setIsAnimating(false);
+    setTimeout(() => {
+      setIsVisible(false);
+      onClose?.();
+    }, 300); // Wait for animation to complete
+  };
 
   if (!isVisible) return null;
 
