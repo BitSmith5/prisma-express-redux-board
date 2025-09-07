@@ -173,19 +173,4 @@ router.delete("/tasks/:id", async (req, res, next) => {
   }
 });
 
-router.get("/tasks/:id/list", async (req, res, next) => {
-  try {
-    const id = Number(req.params.id);
-    const list = await prisma.list.findUnique({
-      where: { tasks: { some: { id } } },
-    });
-    res.json(list);
-  } catch (error) {
-    if (error.code === "P2025") {
-      return res.status(404).json({ error: "List not found" });
-    }
-    next(error);
-  }
-});
-
 export default router;

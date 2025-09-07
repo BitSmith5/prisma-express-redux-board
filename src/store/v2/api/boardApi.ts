@@ -18,7 +18,7 @@ export const boardApi = createApi({
     
     getBoard: builder.query<Board, number>({
       query: (id) => `boards/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Board', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Board', id }],
     }),
     
     createBoard: builder.mutation<Board, string>({
@@ -42,7 +42,7 @@ export const boardApi = createApi({
         },
         body: JSON.stringify({ title }),
       }),
-      invalidatesTags: (result, error, { boardId }) => [
+      invalidatesTags: (_result, _error, { boardId }) => [
         { type: 'Board', id: boardId },
         'Board'
       ],
@@ -59,7 +59,7 @@ export const boardApi = createApi({
     // Tasks endpoints
     getTask: builder.query<Task, number>({
       query: (id) => `tasks/${id}`,
-      providesTags: (result, error, id) => [{ type: 'Task', id }],
+      providesTags: (_result, _error, id) => [{ type: 'Task', id }],
     }),
     
     createTask: builder.mutation<Task, { 
@@ -76,7 +76,7 @@ export const boardApi = createApi({
         },
         body: JSON.stringify({ title, boardId, status, description }),
       }),
-      invalidatesTags: (result, error, { boardId }) => [
+      invalidatesTags: (_result, _error, { boardId }) => [
         { type: 'Board', id: boardId },
         'Board'
       ],
@@ -91,7 +91,7 @@ export const boardApi = createApi({
         },
         body: JSON.stringify(task),
       }),
-      invalidatesTags: (result, error, task) => [
+      invalidatesTags: (_result, _error, task) => [
         { type: 'Task', id: task.id },
         { type: 'Board', id: task.boardId },
         'Board'
@@ -107,7 +107,7 @@ export const boardApi = createApi({
         },
         body: JSON.stringify({ boardId }),
       }),
-      invalidatesTags: (result, error, { taskId, boardId }) => [
+      invalidatesTags: (_result, _error, { taskId, boardId }) => [
         { type: 'Task', id: taskId },
         { type: 'Board', id: boardId },
         'Board'
