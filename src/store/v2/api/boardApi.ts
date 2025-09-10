@@ -4,7 +4,7 @@ import type { Board, Task, TaskStatus } from '../../types'
 // Define the API slice
 export const boardApi = createApi({
   reducerPath: 'boardApi',
-  baseQuery: fetchBaseQuery({ 
+  baseQuery: fetchBaseQuery({
     baseUrl: '/api',
     // You can add headers, authentication, etc. here
   }),
@@ -15,12 +15,12 @@ export const boardApi = createApi({
       query: () => 'boards',
       providesTags: ['Board'],
     }),
-    
+
     getBoard: builder.query<Board, number>({
       query: (id) => `boards/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Board', id }],
     }),
-    
+
     createBoard: builder.mutation<Board, string>({
       query: (title) => ({
         url: 'boards',
@@ -32,7 +32,7 @@ export const boardApi = createApi({
       }),
       invalidatesTags: ['Board'],
     }),
-    
+
     updateBoard: builder.mutation<Board, { boardId: number; title: string }>({
       query: ({ boardId, title }) => ({
         url: `boards/${boardId}/title`,
@@ -42,12 +42,38 @@ export const boardApi = createApi({
         },
         body: JSON.stringify({ title }),
       }),
+      async onQueryStarted({ boardId, title }, { dispatch, queryFulfilled }) {
+        const patchResult1 = dispatch(
+          boardApi.util.updateQueryData('getBoard', boardId, (draft) => {
+            draft.title = title;
+            draft.updatedAt = new Date().toISOString();
+          })
+        );
+
+        const patchResult2 = dispatch(
+          boardApi.util.updateQueryData('getBoards', undefined, (draft) => {
+            const board = draft.find(b => b.id === boardId);
+            if(board)
+            {
+              board.title = title;
+              board.updatedAt = new Date().toISOString();
+            }
+          })
+        )
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult1.undo();
+          patchResult2.undo();
+        }
+      },
       invalidatesTags: (_result, _error, { boardId }) => [
         { type: 'Board', id: boardId },
         'Board'
       ],
     }),
-    
+
     deleteBoard: builder.mutation<number, number>({
       query: (id) => ({
         url: `boards/${id}`,
@@ -55,18 +81,18 @@ export const boardApi = createApi({
       }),
       invalidatesTags: ['Board'],
     }),
-    
+
     // Tasks endpoints
     getTask: builder.query<Task, number>({
       query: (id) => `tasks/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Task', id }],
     }),
-    
-    createTask: builder.mutation<Task, { 
-      title: string; 
-      boardId: number; 
-      status: TaskStatus; 
-      description: string 
+
+    createTask: builder.mutation<Task, {
+      title: string;
+      boardId: number;
+      status: TaskStatus;
+      description: string
     }>({
       query: ({ title, boardId, status, description }) => ({
         url: 'tasks',
@@ -81,7 +107,7 @@ export const boardApi = createApi({
         'Board'
       ],
     }),
-    
+
     updateTask: builder.mutation<Task, Task>({
       query: (task) => ({
         url: `tasks/${task.id}`,
@@ -97,7 +123,7 @@ export const boardApi = createApi({
         'Board'
       ],
     }),
-    
+
     updateTaskBoardId: builder.mutation<Task, { taskId: number; boardId: number }>({
       query: ({ taskId, boardId }) => ({
         url: `tasks/${taskId}/board`,
@@ -113,7 +139,7 @@ export const boardApi = createApi({
         'Board'
       ],
     }),
-    
+
     deleteTask: builder.mutation<{ id: number; deleted: boolean }, number>({
       query: (id) => ({
         url: `tasks/${id}`,

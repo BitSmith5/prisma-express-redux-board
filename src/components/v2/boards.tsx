@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import debounce from 'lodash.debounce';
-import { useImmer } from 'use-immer';
+import React, { useState, useEffect } from 'react';
 import {
   useGetBoardsQuery,
   useCreateBoardMutation,
@@ -19,24 +17,12 @@ const Boards: React.FC<BoardsProps> = ({ currentBoardId, onBoardSelect }) => {
   const [deleteBoard] = useDeleteBoardMutation();
   const [updateBoard] = useUpdateBoardMutation();
 
-  const [titles, setTitles] = useImmer<{ [key: string]: string | null }>({});
-
   // Auto-select first board when boards load
   useEffect(() => {
     if (boards.length > 0 && !currentBoardId) {
       onBoardSelect(boards[0].id);
     }
   }, [boards, currentBoardId, onBoardSelect]);
-
-  useEffect(() => {
-    setTitles(draft => {
-      boards.forEach(board => {
-        if (!draft[board.id]) {
-          draft[board.id] = board.title;
-        }
-      });
-    });
-  }, [boards]);
 
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
   const dropdownRefs = React.useRef<{ [key: number]: HTMLDivElement | null }>({});
@@ -74,18 +60,8 @@ const Boards: React.FC<BoardsProps> = ({ currentBoardId, onBoardSelect }) => {
     setOpenDropdownId(openDropdownId === boardId ? null : boardId);
   }
 
-  const debounceUpdateTitle = useCallback(
-    debounce((boardId: number, title: string) => {
-      updateBoard({ boardId, title });
-    }, 500),
-    [updateBoard]
-  );
-
   function handleTitleChange(boardId: number, newTitle: string) {
-    setTitles(draft => {
-      draft[boardId] = newTitle;
-    });
-    debounceUpdateTitle(boardId, newTitle);
+    updateBoard({ boardId, title: newTitle });
   }
 
   // Show loading state while fetching boards
@@ -133,7 +109,7 @@ const Boards: React.FC<BoardsProps> = ({ currentBoardId, onBoardSelect }) => {
                   className="input-title"
                   type="text"
                   placeholder="Enter a title..."
-                  value={titles[board.id] || board.title || "Untitled"}
+                  value={board.title || "Untitled"}
                   onChange={(e) => handleTitleChange(board.id, e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                 />
